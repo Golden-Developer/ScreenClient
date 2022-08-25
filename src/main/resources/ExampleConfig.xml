@@ -1,5 +1,6 @@
 <login>
-    <ImageIcon></ImageIcon>
-    <Hostname></Hostname>
-    <Port></Port>
+    <ImageIcon>ImageIcon</ImageIcon>
+    <ServerHostname>ServerHostname</ServerHostname>
+    <ServerPort>ServerPort</ServerPort>
+    <LocalPort>LocalPort</LocalPort>
 </login>

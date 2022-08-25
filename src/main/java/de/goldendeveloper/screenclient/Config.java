@@ -10,22 +10,48 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Config {
 
     private String ImageIcon;
-    private String Hostname;
-    private int Port;
+    private String ServerHostname;
+    private int ServerPort;
+    private int LocalPort;
 
     public Config() {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        InputStream local = classloader.getResourceAsStream("config.xml");
-        if (local == null) {
-            local = classloader.getResourceAsStream("Config.xml");
+        try {
+            // Intern
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            InputStream local = classloader.getResourceAsStream("config.xml");
+
+            //Extern
+            File file = new File("config/Config.xml");
+
+
+            Path path = Files.createTempFile("Config", ".xml");
+
+            if (file.exists()) {
+                InputStream targetStream = new FileInputStream(file);
+                if (targetStream != null && targetStream.available() >= 0) {
+                    readXML(targetStream);
+                }
+            } else {
+                if (local != null && Files.exists(path)) {
+                    readXML(local);
+                } else {
+                    local = classloader.getResourceAsStream("Config.xml");
+                    readXML(local);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        readXML(local);
     }
 
     private void readXML(InputStream inputStream) {
@@ -41,19 +67,23 @@ public class Config {
                 if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) list.item(i);
                     String ImageIcon = element.getElementsByTagName("ImageIcon").item(0).getTextContent();
-                    String Hostname = element.getElementsByTagName("Hostname").item(0).getTextContent();
-                    String Port = element.getElementsByTagName("Port").item(0).getTextContent();
+                    String ServerHostname = element.getElementsByTagName("ServerHostname").item(0).getTextContent();
+                    String ServerPort = element.getElementsByTagName("ServerPort").item(0).getTextContent();
+                    String LocalPort = element.getElementsByTagName("LocalPort").item(0).getTextContent();
 
                     if (!ImageIcon.isEmpty() || !ImageIcon.isBlank()) {
                         this.ImageIcon = ImageIcon;
                     }
-                    if (!Hostname.isEmpty() || !Hostname.isBlank()) {
-                        this.Hostname = Hostname;
+                    if (!ServerHostname.isEmpty() || !ServerHostname.isBlank()) {
+                        this.ServerHostname = ServerHostname;
                     }
-                    if (!Port.isEmpty() || !Port.isBlank()) {
-                        this.Port = Integer.parseInt(Port);
+                    if (!ServerPort.isEmpty() || !ServerPort.isBlank()) {
+                        this.ServerPort = Integer.parseInt(ServerPort);
                     }
 
+                    if (!LocalPort.isEmpty() || !LocalPort.isBlank()) {
+                        this.LocalPort = Integer.parseInt(LocalPort);
+                    }
                 }
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -61,16 +91,20 @@ public class Config {
         }
     }
 
-    public String getHostname() {
-        return Hostname;
+    public String getServerHostname() {
+        return ServerHostname;
     }
 
     public String getImageIcon() {
         return ImageIcon;
     }
 
-    public Integer getPort() {
-        return Port;
+    public Integer getServerPort() {
+        return ServerPort;
+    }
+
+    public int getLocalPort() {
+        return LocalPort;
     }
 }
 
