@@ -22,6 +22,9 @@ public class Config {
     public Config() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream local = classloader.getResourceAsStream("config.xml");
+        if (local == null) {
+            local = classloader.getResourceAsStream("Config.xml");
+        }
         readXML(local);
     }
 
