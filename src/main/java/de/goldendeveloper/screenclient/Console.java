@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Console {
 
-    public Console()  {
+    public String run() {
         System.out.println("Bitte einen Name für diese Anwendung eingeben:");
         Scanner scanner = new Scanner(System.in);
         String name = scanner.nextLine();
@@ -19,5 +19,6 @@ public class Console {
         System.out.println("Der Anwendung's PublicKey lautet: " + publicKey);
 
         System.out.println("Alle Änderungen können im Dashboard angepasst werden!");
+        return name;
     }
 }
