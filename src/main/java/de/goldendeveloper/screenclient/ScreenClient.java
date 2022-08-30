@@ -22,7 +22,7 @@ public class ScreenClient {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode msg = mapper.createObjectNode();
             if (name != null && !name.isBlank()) {
-                msg.put("Name", name);
+                msg.put("name", name);
             }
             msg.put("Port", Main.getConfig().getLocalPort());
             msg.put("IPAdresse", socket.getLocalAddress().toString());
