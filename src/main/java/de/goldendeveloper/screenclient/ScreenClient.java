@@ -26,6 +26,8 @@ public class ScreenClient {
             }
             msg.put("Port", Main.getConfig().getLocalPort());
             msg.put("IPAdresse", socket.getLocalAddress().toString());
+        //    msg.put("SSHPublic", Main.getConfig());
+
             osw.write(msg.toString());
             osw.flush();
             osw.close();

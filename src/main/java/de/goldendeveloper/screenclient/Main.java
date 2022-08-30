@@ -1,10 +1,6 @@
 package de.goldendeveloper.screenclient;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 public class Main {
 
@@ -12,34 +8,26 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         config = new Config();
-        if (ConfigExists()) {
+        if (Config.Exists()) {
             new ScreenClient(null);
         } else {
+            ExportResource("ExampleConfig.xml");
             new ScreenClient(new Console().run());
         }
+
+        new ClientServer();
+        // Run LocalServer
     }
 
     public static Config getConfig() {
         return config;
     }
 
-    public static Boolean ConfigExists() throws Exception {
-        ExportResource("ExampleConfig.xml");
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        Path dir = Paths.get("config/Config.xml");
-        Path src = Path.of(classloader.getResource("config.xml").getPath());
-        boolean exists = Files.exists(dir);
-
-        if (!exists) {
-            File file = new File("config/Config.xml");
-            file.createNewFile();
-            Files.copy(src, dir, StandardCopyOption.COPY_ATTRIBUTES);
-        }
-        return exists;
+    public static void setConfig(Config config) {
+        Main.config = config;
     }
 
-
-    public static String ExportResource(String resourceName) throws Exception {
+    public static void ExportResource(String resourceName) throws Exception {
         InputStream stream = null;
         OutputStream resStreamOut = null;
         String jarFolder;
@@ -49,23 +37,18 @@ public class Main {
             if (stream == null) {
                 throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
             }
-
             int readBytes;
             byte[] buffer = new byte[4096];
-//            jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
             jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
-            System.out.println(jarFolder);
             resStreamOut = new FileOutputStream(jarFolder + "/Config.xml");
             while ((readBytes = stream.read(buffer)) > 0) {
                 resStreamOut.write(buffer, 0, readBytes);
             }
-        } catch (Exception ex) {
-            throw ex;
         } finally {
+            assert stream != null;
             stream.close();
+            assert resStreamOut != null;
             resStreamOut.close();
         }
-
-        return jarFolder + "/" + resourceName;
     }
 }

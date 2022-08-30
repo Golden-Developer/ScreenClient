@@ -14,8 +14,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Config {
 
@@ -26,13 +28,11 @@ public class Config {
 
     public Config() {
         try {
-            // Intern
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             InputStream local = classloader.getResourceAsStream("config.xml");
 
-            //Extern
-            File file = new File("config/Config.xml");
-
+            String jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
+            File file = new File(jarFolder + "/Config.xml");
 
             Path path = Files.createTempFile("Config", ".xml");
 
@@ -49,9 +49,15 @@ public class Config {
                     readXML(local);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    public static Boolean Exists() throws Exception {
+        String jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
+        return Files.exists(Paths.get(jarFolder + "/Config.xml"));
     }
 
     private void readXML(InputStream inputStream) {
