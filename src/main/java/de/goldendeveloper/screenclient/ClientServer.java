@@ -53,24 +53,18 @@ public class ClientServer {
             JsonNode upload = node.get("upload");
             if (upload.has("image")) {
                 JsonNode image = upload.get("image");
-          /*      InputStream inputStream = socket.getInputStream();
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                BufferedImage bufferedImage = ImageIO.read(bufferedInputStream);
-                File outputfile = new File(Main.getConfig().getImageOutputPath() + generatedString + ".jpg");
-                ImageIO.write(bufferedImage, "jpg", outputfile);
-                System.out.println(socket.getPort());*/
-
                 if (image.has("byteArray") && image.has("size")) {
 
                     byte[] img = upload.get("size").binaryValue();
                     int size = ByteBuffer.wrap(img).asIntBuffer().get();
-
                     byte[] imageAr = upload.get("byteArray").binaryValue();
-
                     BufferedImage imageBuff = ImageIO.read(new ByteArrayInputStream(imageAr));
+                    ByteArrayOutputStream opt = null;
+                    ImageIO.write(imageBuff, "png", opt);
+                    opt.close();
+//                    byte[] b = opt.toByteArray();
 
                     System.out.println("Received " + imageBuff.getHeight() + "x" + imageBuff.getWidth() + ": " + System.currentTimeMillis());
-//                    ImageIO.write(imageBuff, "jpg", new File("C:\\Users\\Jakub\\Pictures\\test2.jpg"));
                     //TODO: Save Image File
                 }
             }
@@ -139,3 +133,10 @@ public class ClientServer {
     "Name": ""
   }
 }*/
+
+          /*      InputStream inputStream = socket.getInputStream();
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                BufferedImage bufferedImage = ImageIO.read(bufferedInputStream);
+                File outputfile = new File(Main.getConfig().getImageOutputPath() + generatedString + ".jpg");
+                ImageIO.write(bufferedImage, "jpg", outputfile);
+                System.out.println(socket.getPort());*/
