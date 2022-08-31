@@ -7,7 +7,6 @@ public class Main {
     private static Config config;
 
     public static void main(String[] args) throws Exception {
-//        new SSH();
         config = new Config();
         if (Config.Exists()) {
             new ScreenClient(null);
@@ -17,9 +16,9 @@ public class Main {
         }
 
         new ClientServer();
-        // Run LocalServer
 
         //TODO: Generate and Safe ssh Key
+        //        new SSH();
     }
 
     public static Config getConfig() {

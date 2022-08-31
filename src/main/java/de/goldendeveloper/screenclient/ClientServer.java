@@ -1,61 +1,36 @@
 package de.goldendeveloper.screenclient;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
+import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 public class ClientServer {
 
     public ClientServer() throws IOException {
-        SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(Main.getConfig().getLocalPort());
+        ServerSocket serverSocket = new ServerSocket(Main.getConfig().getLocalPort());
         while (true) {
-            SSLSocket socket = null;
+            Socket socket = null;
             try {
-                socket = (SSLSocket) serverSocket.accept();
-//                BufferedReader incoming = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-//                PrintStream outgoing = new PrintStream(socket.getOutputStream());
-
-                DataOutputStream os=new DataOutputStream(socket.getOutputStream());
-                DataInputStream is=new DataInputStream(socket.getInputStream());
-
-                //Gui du lieu len server
-                String str="helloworld";
-                os.writeBytes(str);
-                //Nhan du lieu da qua xu li tu server ve
-                String responseStr;
-                if((responseStr=is.readUTF())!=null)
-                {
-                    System.out.println(responseStr);
-                }
-
-                os.close();
-                is.close();
-//                sslsocket.close();
-     /*
+                socket = serverSocket.accept();
+                BufferedReader incoming = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 Stream<String> ts = incoming.lines();
                 for (Object st : ts.toArray()) {
                     ObjectMapper mapper = new ObjectMapper();
-                    ObjectNode object = mapper.createObjectNode();;
-                    String name = object.get("name").asText();
-                    String action = object.get("action").asText();
-                    String server = object.get("server").asText();
-
-                    System.out.println("Receiving Data Name: " + name + " Action: " + action + " Server: " + server);
-                    System.out.println("Get Data: " + name + action + server);
-
-                    //RUN CODE
+                    JsonNode node = mapper.readTree(st.toString());
+                    onDelete(node);
+                    onUpdate(node);
+                    onUpload(node);
                 }
-                outgoing.close();*/
-            } catch (IOException e) {
+                incoming.close();
+            } catch (IOException | XMLStreamException | URISyntaxException e) {
                 e.printStackTrace();
             } finally {
                 if (socket != null) {
@@ -65,6 +40,59 @@ public class ClientServer {
                         e.printStackTrace();
                     }
                 }
+            }
+        }
+    }
+
+    public void onUpload(JsonNode node) {
+        if (node.has("upload")) {
+            JsonNode upload = node.get("upload");
+            if (upload.has("image")) {
+          /*      InputStream inputStream = socket.getInputStream();
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                BufferedImage bufferedImage = ImageIO.read(bufferedInputStream);
+                File outputfile = new File(Main.getConfig().getImageOutputPath() + generatedString + ".jpg");
+                ImageIO.write(bufferedImage, "jpg", outputfile);
+                System.out.println(socket.getPort());*/
+                System.out.println("Bild Empfangen");
+
+                //TODO: Save Image File
+            }
+
+            if (upload.has("name")) {
+                // TODO: Set Image name by uploaded Name
+            }
+
+            if (upload.has("duration")) {
+                //TODO: Save Image display Duration
+            }
+        }
+    }
+
+    public void onUpdate(JsonNode node) throws XMLStreamException, FileNotFoundException, URISyntaxException {
+        if (node.has("update")) {
+            JsonNode update = node.get("update");
+            String jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
+            File file = new File(jarFolder + "/Config.xml");
+            if (update.has("clientPort")) {
+                Config.write(file, "LocalPort", update.get("clientPort").asText());
+            }
+
+            if (update.has("serverPort")) {
+                Config.write(file, "ServerPort", update.get("serverPort").asText());
+            }
+
+            if (update.has("ipAdresse")) {
+                Config.write(file, "ServerHostname", update.get("ipAdresse").asText());
+            }
+        }
+    }
+
+    public void onDelete(JsonNode node) {
+        if (node.has("delete")) {
+            JsonNode delete = node.get("delete");
+            if (delete.has("name")) {
+                //TODO: Find Image File by Name and delete
             }
         }
     }
@@ -79,3 +107,19 @@ public class ClientServer {
         object.put("SSHPublic", "");
     }
 }
+
+/*{
+  "upload": {
+    "Image" :"",
+    "Name":"",
+    "Duration": ""
+  },
+  "update": {
+    "ClientPort": "",
+    "ServerPort" ."",
+    "IPAdresse" :""
+  },
+  "delete" : {
+    "Name": ""
+  }
+}*/

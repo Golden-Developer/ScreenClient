@@ -2,9 +2,7 @@ package de.goldendeveloper.screenclient;
 
 import com.google.common.net.InetAddresses;
 
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Scanner;
@@ -35,65 +33,12 @@ public class Console {
     }
 
 
-    private static void write(File out, String key, String value) throws XMLStreamException, FileNotFoundException {
-        XMLOutputFactory output = XMLOutputFactory.newInstance();
-        XMLStreamWriter writer = output.createXMLStreamWriter(new FileOutputStream(out));
-
-        writer.writeStartElement("login");
-
-        String ImageIcon = "ImageIcon";
-        writer.writeStartElement("ImageIcon");
-        if (ImageIcon.equalsIgnoreCase(key)) {
-            writer.writeCharacters(value);
-        } else {
-            writer.writeCharacters(Main.getConfig().getImageIcon());
-        }
-        writer.writeEndElement();
-
-        String ServerHostname = "ServerHostname";
-        writer.writeStartElement(ServerHostname);
-        if (ServerHostname.equalsIgnoreCase(key)) {
-            writer.writeCharacters(value);
-        } else {
-            writer.writeCharacters(Main.getConfig().getServerHostname());
-        }
-        writer.writeEndElement();
-
-
-        String ServerPort = "ServerPort";
-        writer.writeStartElement(ServerPort);
-        if (ServerPort.equalsIgnoreCase(key)) {
-            writer.writeCharacters(value);
-        } else {
-            writer.writeCharacters(String.valueOf(Main.getConfig().getServerPort()));
-        }
-        writer.writeEndElement();
-
-
-        String LocalPort = "LocalPort";
-        writer.writeStartElement(LocalPort);
-        if (LocalPort.equalsIgnoreCase(key)) {
-            writer.writeCharacters(value);
-        } else {
-            writer.writeCharacters(String.valueOf(Main.getConfig().getLocalPort()));
-        }
-        writer.writeEndElement();
-
-        writer.writeEndElement();
-
-        writer.flush();
-        writer.close();
-
-        Main.setConfig(new Config());
-    }
-
-
     private void setLocalPort(Scanner scanner, File file) throws XMLStreamException, FileNotFoundException {
         System.out.println("Bitte einen Port für diese Anwendung eingeben:");
         String port = scanner.nextLine();
         if (isInteger(port)) {
             System.out.println("Der Anwendung's Port lautet: " + port);
-            write(file, "LocalPort", port);
+            Config.write(file, "LocalPort", port);
         } else {
             System.out.println("Der Locale Port muss eine Zahl sein!");
             this.setLocalPort(scanner, file);
@@ -105,7 +50,7 @@ public class Console {
         String serverPort = scanner.nextLine();
         if (isInteger(serverPort)) {
             System.out.println("Der Anwendung's Server Port lautet: " + serverPort);
-            write(file, "ServerPort" ,serverPort);
+            Config.write(file, "ServerPort" ,serverPort);
         } else {
             System.out.println("Der Server Port muss eine Zahl sein!");
             this.setServerPort(scanner, file);
@@ -118,7 +63,7 @@ public class Console {
 
         if (InetAddresses.isInetAddress(serverHostname)) {
             System.out.println("Die Anwendung's Server Ip-Adresse lautet: " + serverHostname);
-            write(file, "ServerHostname" ,serverHostname);
+            Config.write(file, "ServerHostname" ,serverHostname);
         } else {
             System.out.println("Die IP Addresse " + serverHostname + " konnte nicht gefunden werden");
             this.setServerHostname(scanner, file);

@@ -10,10 +10,10 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +58,58 @@ public class Config {
     public static Boolean Exists() throws Exception {
         String jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
         return Files.exists(Paths.get(jarFolder + "/Config.xml"));
+    }
+
+    public static void write(File out, String key, String value) throws XMLStreamException, FileNotFoundException {
+        XMLOutputFactory output = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = output.createXMLStreamWriter(new FileOutputStream(out));
+
+        writer.writeStartElement("login");
+
+        String ImageIcon = "ImageIcon";
+        writer.writeStartElement("ImageIcon");
+        if (ImageIcon.equalsIgnoreCase(key)) {
+            writer.writeCharacters(value);
+        } else {
+            writer.writeCharacters(Main.getConfig().getImageIcon());
+        }
+        writer.writeEndElement();
+
+        String ServerHostname = "ServerHostname";
+        writer.writeStartElement(ServerHostname);
+        if (ServerHostname.equalsIgnoreCase(key)) {
+            writer.writeCharacters(value);
+        } else {
+            writer.writeCharacters(Main.getConfig().getServerHostname());
+        }
+        writer.writeEndElement();
+
+
+        String ServerPort = "ServerPort";
+        writer.writeStartElement(ServerPort);
+        if (ServerPort.equalsIgnoreCase(key)) {
+            writer.writeCharacters(value);
+        } else {
+            writer.writeCharacters(String.valueOf(Main.getConfig().getServerPort()));
+        }
+        writer.writeEndElement();
+
+
+        String LocalPort = "LocalPort";
+        writer.writeStartElement(LocalPort);
+        if (LocalPort.equalsIgnoreCase(key)) {
+            writer.writeCharacters(value);
+        } else {
+            writer.writeCharacters(String.valueOf(Main.getConfig().getLocalPort()));
+        }
+        writer.writeEndElement();
+
+        writer.writeEndElement();
+
+        writer.flush();
+        writer.close();
+
+        Main.setConfig(new Config());
     }
 
     private void readXML(InputStream inputStream) {

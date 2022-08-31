@@ -20,15 +20,15 @@ public class ScreenClient {
             OutputStream raus = socket.getOutputStream();
             OutputStreamWriter osw = new OutputStreamWriter(raus, StandardCharsets.UTF_8);
             ObjectMapper mapper = new ObjectMapper();
-            ObjectNode msg = mapper.createObjectNode();
+            ObjectNode json = mapper.createObjectNode();
             if (name != null && !name.isBlank()) {
-                msg.put("name", name);
+                json.put("name", name);
             }
-            msg.put("Port", Main.getConfig().getLocalPort());
-            msg.put("IPAdresse", socket.getLocalAddress().toString());
+            json.put("Port", Main.getConfig().getLocalPort());
+            json.put("IPAdresse", socket.getLocalAddress().toString());
         //    msg.put("SSHPublic", Main.getConfig());
 
-            osw.write(msg.toString());
+            osw.write(json.toString());
             osw.flush();
             osw.close();
         } catch (UnknownHostException e) {
