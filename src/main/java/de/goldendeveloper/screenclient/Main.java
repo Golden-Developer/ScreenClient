@@ -8,14 +8,29 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         config = new Config();
-        if (Config.Exists()) {
-            new ScreenClient(null);
-        } else {
-            ExportResource("ExampleConfig.xml");
-            new ScreenClient(new Console().run());
-        }
+        Thread thread = new Thread(() -> {
+            try {
+                if (Config.Exists()) {
+                    new ScreenClient(null);
+                } else {
+                    ExportResource("ExampleConfig.xml");
+                    new ScreenClient(new Console().run());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        new ClientServer();
+        thread.start();
+        if (thread.isAlive()) {
+             new Thread(() -> {
+                 try {
+                     new ClientServer();
+                 } catch (IOException e) {
+                     throw new RuntimeException(e);
+                 }
+             }).start();
+        }
 
         //TODO: Generate and Safe ssh Key
         //        new SSH();

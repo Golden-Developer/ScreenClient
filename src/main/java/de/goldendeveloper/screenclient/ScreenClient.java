@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 public class ScreenClient {
 
     public ScreenClient(String name) {
-        System.out.println("Connected to server.");
+        System.out.println("[ScreenClient] Connect to server...");
         Socket socket = null;
         try {
             socket = new Socket(Main.getConfig().getServerHostname(), Main.getConfig().getServerPort());
@@ -24,13 +24,16 @@ public class ScreenClient {
             if (name != null && !name.isBlank()) {
                 json.put("name", name);
             }
-            json.put("Port", Main.getConfig().getLocalPort());
-            json.put("IPAdresse", socket.getLocalAddress().toString());
-        //    msg.put("SSHPublic", Main.getConfig());
 
+            json.put("Port", Main.getConfig().getLocalPort());
+            json.put("IPAdresse", socket.getLocalAddress().toString().replace("/", ""));
+            json.put("SSHPublic", "SSHPublicKey");
+
+            System.out.println("[ScreenClient] Sending data...");
             osw.write(json.toString());
             osw.flush();
             osw.close();
+            System.out.println("[ScreenClient] Sending finished");
         } catch (UnknownHostException e) {
             System.out.println("Unknown Host...");
             e.printStackTrace();
@@ -41,9 +44,9 @@ public class ScreenClient {
             if (socket != null) {
                 try {
                     socket.close();
-                    System.out.println("Socket geschlossen...");
+                    System.out.println("[ScreenClient] Socket geschlossen...");
                 } catch (IOException e) {
-                    System.out.println("Socket konnte nicht geschlossen werden...");
+                    System.out.println("[ScreenClient] Socket konnte nicht geschlossen werden...");
                     e.printStackTrace();
                 }
             }

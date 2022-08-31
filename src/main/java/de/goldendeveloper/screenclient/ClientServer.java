@@ -4,17 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import javax.imageio.ImageIO;
 import javax.xml.stream.XMLStreamException;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 public class ClientServer {
 
     public ClientServer() throws IOException {
+        System.out.println("[ClientServer] ClientServer starting...");
         ServerSocket serverSocket = new ServerSocket(Main.getConfig().getLocalPort());
         while (true) {
             Socket socket = null;
@@ -44,19 +48,31 @@ public class ClientServer {
         }
     }
 
-    public void onUpload(JsonNode node) {
+    public void onUpload(JsonNode node) throws IOException {
         if (node.has("upload")) {
             JsonNode upload = node.get("upload");
             if (upload.has("image")) {
+                JsonNode image = upload.get("image");
           /*      InputStream inputStream = socket.getInputStream();
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
                 BufferedImage bufferedImage = ImageIO.read(bufferedInputStream);
                 File outputfile = new File(Main.getConfig().getImageOutputPath() + generatedString + ".jpg");
                 ImageIO.write(bufferedImage, "jpg", outputfile);
                 System.out.println(socket.getPort());*/
-                System.out.println("Bild Empfangen");
 
-                //TODO: Save Image File
+                if (image.has("byteArray") && image.has("size")) {
+
+                    byte[] img = upload.get("size").binaryValue();
+                    int size = ByteBuffer.wrap(img).asIntBuffer().get();
+
+                    byte[] imageAr = upload.get("byteArray").binaryValue();
+
+                    BufferedImage imageBuff = ImageIO.read(new ByteArrayInputStream(imageAr));
+
+                    System.out.println("Received " + imageBuff.getHeight() + "x" + imageBuff.getWidth() + ": " + System.currentTimeMillis());
+//                    ImageIO.write(imageBuff, "jpg", new File("C:\\Users\\Jakub\\Pictures\\test2.jpg"));
+                    //TODO: Save Image File
+                }
             }
 
             if (upload.has("name")) {
