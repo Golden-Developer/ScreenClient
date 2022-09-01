@@ -5,13 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import org.codehaus.plexus.util.Base64;
 import javax.xml.stream.XMLStreamException;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
@@ -53,18 +55,18 @@ public class ClientServer {
             JsonNode upload = node.get("upload");
             if (upload.has("image")) {
                 JsonNode image = upload.get("image");
-                if (image.has("byteArray") && image.has("size")) {
+                if (image.has("byteArray")) {
+                    String img = image.get("byteArray").asText();
+                    byte[] byteArray = img.getBytes();
 
-                    byte[] img = upload.get("size").binaryValue();
-                    int size = ByteBuffer.wrap(img).asIntBuffer().get();
-                    byte[] imageAr = upload.get("byteArray").binaryValue();
-                    BufferedImage imageBuff = ImageIO.read(new ByteArrayInputStream(imageAr));
-                    ByteArrayOutputStream opt = null;
-                    ImageIO.write(imageBuff, "png", opt);
-                    opt.close();
-//                    byte[] b = opt.toByteArray();
+                    byte[] bytesFromDecode = Base64.decodeBase64(byteArray);
+                    BufferedImage newImg = toBufferedImage(bytesFromDecode);
 
-                    System.out.println("Received " + imageBuff.getHeight() + "x" + imageBuff.getWidth() + ": " + System.currentTimeMillis());
+                    JFrame frame = new JFrame();
+                    frame.getContentPane().setLayout(new FlowLayout());
+                    frame.getContentPane().add(new JLabel(new ImageIcon(newImg)));
+                    frame.pack();
+                    frame.setVisible(true);
                     //TODO: Save Image File
                 }
             }
@@ -115,6 +117,11 @@ public class ClientServer {
         object.put("Port", Main.getConfig().getLocalPort());
         object.put("IPAdresse", socket.getLocalAddress().toString() );
         object.put("SSHPublic", "");
+    }
+
+    public static BufferedImage toBufferedImage(byte[] bytes) throws IOException {
+        InputStream is = new ByteArrayInputStream(bytes);
+        return ImageIO.read(is);
     }
 }
 
