@@ -36,12 +36,17 @@ public class Console {
     private void setLocalPort(Scanner scanner, File file) throws XMLStreamException, FileNotFoundException {
         System.out.println("Bitte einen Port für diese Anwendung eingeben:");
         String port = scanner.nextLine();
-        if (isInteger(port)) {
-            System.out.println("Der Anwendung's Port lautet: " + port);
-            Config.write(file, "LocalPort", port);
+        if (!port.isBlank()) {
+            if (isInteger(port)) {
+                System.out.println("Der Anwendung's Port lautet: " + port);
+                Config.write(file, "LocalPort", port);
+            } else {
+                System.out.println("Der Locale Port muss eine Zahl sein!");
+                this.setLocalPort(scanner, file);
+            }
         } else {
-            System.out.println("Der Locale Port muss eine Zahl sein!");
-            this.setLocalPort(scanner, file);
+            System.out.println("Der Anwendung's Port lautet: " + Main.getConfig().getLocalPort());
+            Config.write(file, "LocalPort", String.valueOf(Main.getConfig().getLocalPort()));
         }
     }
 
