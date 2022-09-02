@@ -77,7 +77,7 @@ public class Config {
 
         String ServerHostname = "ServerHostname";
         writer.writeStartElement(ServerHostname);
-        if (ServerHostname.equalsIgnoreCase(key)) {
+        if (key.equalsIgnoreCase(ServerHostname)) {
             writer.writeCharacters(value);
         } else {
             writer.writeCharacters(Main.getConfig().getServerHostname());
@@ -87,7 +87,7 @@ public class Config {
 
         String ServerPort = "ServerPort";
         writer.writeStartElement(ServerPort);
-        if (ServerPort.equalsIgnoreCase(key)) {
+        if (key.equalsIgnoreCase(ServerPort)) {
             writer.writeCharacters(value);
         } else {
             writer.writeCharacters(String.valueOf(Main.getConfig().getServerPort()));

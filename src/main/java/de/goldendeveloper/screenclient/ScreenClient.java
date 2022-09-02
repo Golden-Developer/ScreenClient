@@ -51,21 +51,5 @@ public class ScreenClient {
                 }
             }
         }
-/*        ImageIcon imageIcon = new ImageIcon(Main.getConfig().getImageIcon());
-
-        try {
-            OutputStream outputStream = socket.getOutputStream();
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-            Image image = imageIcon.getImage();
-            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-            Graphics graphics = bufferedImage.createGraphics();
-            graphics.drawImage(image, 0, 0, null);
-            graphics.dispose();
-            ImageIO.write(bufferedImage, "jpg", bufferedOutputStream);
-            bufferedOutputStream.close();
-            socket.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }*/
     }
 }

@@ -43,7 +43,7 @@ public class Main {
             new Thread(() -> {
                 try {
                     new ClientServer();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }).start();

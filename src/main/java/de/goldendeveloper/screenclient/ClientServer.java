@@ -15,11 +15,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ClientServer {
 
-    public ClientServer() throws IOException {
+    public ClientServer() throws Exception {
         System.out.println("[ClientServer] ClientServer starting...");
         ServerSocket serverSocket = new ServerSocket(Main.getConfig().getLocalPort());
         while (true) {
@@ -81,22 +83,28 @@ public class ClientServer {
         }
     }
 
-    public void onUpdate(JsonNode node) throws XMLStreamException, FileNotFoundException, URISyntaxException {
+    public void onUpdate(JsonNode node) throws XMLStreamException, IOException, URISyntaxException, InterruptedException {
         if (node.has("update")) {
             JsonNode update = node.get("update");
             String jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
             File file = new File(jarFolder + "/Config.xml");
-            if (update.has("clientPort")) {
-                Config.write(file, "LocalPort", update.get("clientPort").asText());
+            if (update.has("clientport")) {
+                Config.write(file, "LocalPort", update.get("clientport").asText());
             }
 
-            if (update.has("serverPort")) {
-                Config.write(file, "ServerPort", update.get("serverPort").asText());
+            if (update.has("serverport")) {
+                Config.write(file, "ServerPort", update.get("serverport").asText());
             }
 
-            if (update.has("ipAdresse")) {
-                Config.write(file, "ServerHostname", update.get("ipAdresse").asText());
+            if (update.has("serveripadresse")) {
+                Config.write(file, "ServerHostname", update.get("serveripadresse").asText());
             }
+
+            System.out.println("[ClientServer] New data received");
+            System.out.println("[ClientServer] Restart Programm in 30 Seconds");
+            TimeUnit.SECONDS.sleep(30);
+            System.out.println("[ClientServer] Restart Programm now");
+            restartApplication();
         }
     }
 
@@ -123,7 +131,30 @@ public class ClientServer {
         InputStream is = new ByteArrayInputStream(bytes);
         return ImageIO.read(is);
     }
+
+    public void restartApplication() throws URISyntaxException, IOException {
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File currentJar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+        /* is it a jar file? */
+        if(!currentJar.getName().endsWith(".jar")) {
+            return;
+        }
+
+        /* Build command: java -jar application.jar */
+        final ArrayList<String> command = new ArrayList<>();
+        command.add(javaBin);
+        command.add("-jar");
+        command.add(currentJar.getPath());
+
+        final ProcessBuilder builder = new ProcessBuilder(command);
+        builder.start();
+        System.exit(0);
+    }
 }
+
+
+
 
 /*{
   "upload": {
@@ -140,10 +171,3 @@ public class ClientServer {
     "Name": ""
   }
 }*/
-
-          /*      InputStream inputStream = socket.getInputStream();
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                BufferedImage bufferedImage = ImageIO.read(bufferedInputStream);
-                File outputfile = new File(Main.getConfig().getImageOutputPath() + generatedString + ".jpg");
-                ImageIO.write(bufferedImage, "jpg", outputfile);
-                System.out.println(socket.getPort());*/

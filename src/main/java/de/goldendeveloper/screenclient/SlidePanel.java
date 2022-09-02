@@ -24,7 +24,6 @@ public class SlidePanel extends JFrame implements ActionListener {
 
         File f = new File(path);
         if (f.list().length > 0) {
-
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             setSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,7 +40,6 @@ public class SlidePanel extends JFrame implements ActionListener {
             b2.addActionListener(this);
             setVisible(false);
 
-
             String[] ls = getImages(f.list(), path);
             s = new ImageIcon[ls.length];
 
@@ -53,7 +51,6 @@ public class SlidePanel extends JFrame implements ActionListener {
             add(l, BorderLayout.CENTER);
             l.setIcon(s[0]);
 
-
             setExtendedState(JFrame.MAXIMIZED_BOTH);
             setUndecorated(true);
             setVisible(true);
@@ -63,7 +60,8 @@ public class SlidePanel extends JFrame implements ActionListener {
 
             setVisible(true);
         } else {
-            System.exit(0);
+            System.out.println("[SlidePanel] Keine Bilder vorhanden");
+            System.out.println("[SlidePanel] Waiting for Images");
         }
     }
 
