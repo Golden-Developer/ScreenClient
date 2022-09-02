@@ -22,14 +22,13 @@ public class Main {
             }
         });
 
-
         Thread thread = new Thread(() -> {
             try {
                 if (Config.Exists()) {
                     new ScreenClient(null);
                     slider.start();
                 } else {
-                    ExportResource("ExampleConfig.xml");
+                    Config.Export("ExampleConfig.xml");
                     new ScreenClient(new Console().run());
                     slider.start();
                 }
@@ -50,7 +49,7 @@ public class Main {
         }
 
         //TODO: Generate and Safe ssh Key
-        //        new SSH();
+        //new SSH();
     }
 
     public static Config getConfig() {
@@ -59,31 +58,6 @@ public class Main {
 
     public static void setConfig(Config config) {
         Main.config = config;
-    }
-
-    public static void ExportResource(String resourceName) throws Exception {
-        InputStream stream = null;
-        OutputStream resStreamOut = null;
-        String jarFolder;
-        try {
-            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-            stream = classloader.getResourceAsStream(resourceName);
-            if (stream == null) {
-                throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
-            }
-            int readBytes;
-            byte[] buffer = new byte[4096];
-            jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
-            resStreamOut = new FileOutputStream(jarFolder + "/Config.xml");
-            while ((readBytes = stream.read(buffer)) > 0) {
-                resStreamOut.write(buffer, 0, readBytes);
-            }
-        } finally {
-            assert stream != null;
-            stream.close();
-            assert resStreamOut != null;
-            resStreamOut.close();
-        }
     }
 
     public static void startClient() throws URISyntaxException, IOException {

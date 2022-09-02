@@ -53,12 +53,17 @@ public class Console {
     private void setServerPort(Scanner scanner, File file) throws XMLStreamException, FileNotFoundException {
         System.out.println("Bitte einen Server Port für diese Anwendung eingeben:");
         String serverPort = scanner.nextLine();
-        if (isInteger(serverPort)) {
-            System.out.println("Der Anwendung's Server Port lautet: " + serverPort);
-            Config.write(file, "ServerPort" ,serverPort);
+        if (!serverPort.isBlank()) {
+            if (isInteger(serverPort)) {
+                System.out.println("Der Anwendung's Server Port lautet: " + serverPort);
+                Config.write(file, "ServerPort", serverPort);
+            } else {
+                System.out.println("Der Server Port muss eine Zahl sein!");
+                this.setServerPort(scanner, file);
+            }
         } else {
-            System.out.println("Der Server Port muss eine Zahl sein!");
-            this.setServerPort(scanner, file);
+            System.out.println("Der Anwendung's Server Port lautet: " + Main.getConfig().getServerPort());
+            Config.write(file, "ServerPort", String.valueOf(Main.getConfig().getServerPort()));
         }
     }
 
@@ -66,12 +71,17 @@ public class Console {
         System.out.println("Bitte eine Server Ip-Adresse für diese Anwendung eingeben:");
         String serverHostname = scanner.nextLine();
 
-        if (InetAddresses.isInetAddress(serverHostname)) {
-            System.out.println("Die Anwendung's Server Ip-Adresse lautet: " + serverHostname);
-            Config.write(file, "ServerHostname" ,serverHostname);
+        if (!serverHostname.isBlank()) {
+            if (InetAddresses.isInetAddress(serverHostname)) {
+                System.out.println("Die Anwendung's Server Ip-Adresse lautet: " + serverHostname);
+                Config.write(file, "ServerHostname", serverHostname);
+            } else {
+                System.out.println("Die IP Addresse " + serverHostname + " konnte nicht gefunden werden");
+                this.setServerHostname(scanner, file);
+            }
         } else {
-            System.out.println("Die IP Addresse " + serverHostname + " konnte nicht gefunden werden");
-            this.setServerHostname(scanner, file);
+            System.out.println("Die Anwendung's Server Ip-Adresse lautet: " + Main.getConfig().getServerHostname());
+            Config.write(file, "ServerHostname", Main.getConfig().getServerHostname());
         }
     }
 

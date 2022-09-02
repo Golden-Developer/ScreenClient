@@ -164,5 +164,30 @@ public class Config {
     public int getLocalPort() {
         return LocalPort;
     }
+
+    public static void Export(String resourceName) throws Exception {
+        InputStream stream = null;
+        OutputStream resStreamOut = null;
+        String jarFolder;
+        try {
+            ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+            stream = classloader.getResourceAsStream(resourceName);
+            if (stream == null) {
+                throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
+            }
+            int readBytes;
+            byte[] buffer = new byte[4096];
+            jarFolder = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
+            resStreamOut = new FileOutputStream(jarFolder + "/Config.xml");
+            while ((readBytes = stream.read(buffer)) > 0) {
+                resStreamOut.write(buffer, 0, readBytes);
+            }
+        } finally {
+            assert stream != null;
+            stream.close();
+            assert resStreamOut != null;
+            resStreamOut.close();
+        }
+    }
 }
 
